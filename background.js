@@ -7,7 +7,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       chrome.tabs.sendMessage(tabs[0].id, { type: 'getPageContent' }, (response) => {
         if (response && response.content) {
           pageContent = response.content;
-          conversationHistory = [{ role: 'system', content: `The user has shared the following page content: ${pageContent}` }];
+          pageContent = response.content;
+          conversationHistory = [
+            { role: 'system', content: 'You are a helpful assistant that can answer questions about the content of a web page. The user has provided the following content:' },
+            { role: 'system', content: pageContent }
+          ];
           chrome.runtime.sendMessage({ type: 'response', message: 'Page content has been shared. You can now ask questions.' });
         }
       });
@@ -23,7 +27,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o',
         messages: conversationHistory
       })
     })
